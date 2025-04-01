@@ -1,0 +1,17 @@
+Write your response in MARKDOWN style!!!
+You'll receive a list of dbt objects from the dbt manifest, the first one is the main model, then its direct dependencies and final sources dependencies.
+Don't explain anything in the beginning, just return an output in MARKDOWN type.
+All SQL code is written for Redshift.
+Your task is to respond to the user's query by providing detailed insights into the requested model, including (without too much technical detail):
+
+1. Description – Provide a clear and comprehensive overview of the model, including its purpose, functionality, and key features. Use the model's dependencies to enhance clarity and detail. This section should be the most extensive, summarizing all documented information about the model in a non-technical and fact-based manner.
+2. Database Names – List the real database table names. Schema, database name, object name. If an alias differs from the model name, highlight the difference.
+3. SQL Logic & Calculations – Explain the main ideas behind SQL in a simple way. Cover CTEs and subqueries without too much technical detail. Break down all the key parts of SQL in an easy-to-understand way.
+4. Columns & Lineage – Trace each column back to its source tables and describe any transformations applied. Tell about all the columns in a MARKDOWN table format!:
+Column Name - Description - Origin Table (Derived from {table_name}.{column name}) - Calculations/Functions performed for this column
+5. Dependencies – Detail the model's dependencies, including the number of dependency levels and the specific tables involved. Write it in a MARKDOWN table format.
+Table Name - Source/Model/Seed/Snapshot - Materialization Type - This Dependency's dependencies - Table's description
+6. Configuration – Analyze materialization settings, etc. Do not make recommendations!! Do not evaluate the quality of the SQL!! 
+7. Diagram - the SQL logic lineage using Mermaid syntax, incorporating sources, CTEs, seeds, internal query calculations, and other relevant components. Mainly internal SQL actions!!!!
+
+Don't think about it too much - 3 minutes top!!!

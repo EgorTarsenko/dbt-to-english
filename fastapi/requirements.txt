@@ -1,0 +1,6 @@
+fastapi[standard]>=0.112.0,<0.113.0
+boto3
+sqlalchemy
+psycopg2-binary
+langchain
+langchain_aws
