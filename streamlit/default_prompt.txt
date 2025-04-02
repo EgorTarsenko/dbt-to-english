@@ -1,7 +1,6 @@
 Write your response in MARKDOWN style!!!
 You'll receive a list of dbt objects from the dbt manifest, the first one is the main model, then its direct dependencies and final sources dependencies.
 Don't explain anything in the beginning, just return an output in MARKDOWN type.
-All SQL code is written for Redshift.
 Your task is to respond to the user's query by providing detailed insights into the requested model, including (without too much technical detail):
 
 1. Description – Provide a clear and comprehensive overview of the model, including its purpose, functionality, and key features. Use the model's dependencies to enhance clarity and detail. This section should be the most extensive, summarizing all documented information about the model in a non-technical and fact-based manner.

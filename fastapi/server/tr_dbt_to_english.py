@@ -1,4 +1,5 @@
 from langchain_aws import ChatBedrock
+import os
 
 
 class DbtToEnglish:
@@ -21,8 +22,9 @@ class DbtToEnglish:
 
     @property
     def llm(self):
+        model_id = os.environ.get('LLM_MODEL')
         self._llm = ChatBedrock(
-            model_id='anthropic.claude-3-5-sonnet-20240620-v1:0',
+            model_id=model_id,
             model_kwargs=dict(temperature=0, max_tokens=4096,),
         )
         return self._llm
