@@ -56,13 +56,40 @@ if submitted and nodes_to_parse:
                         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
                         mermaid.initialize({{ startOnLoad: true }});
                     </script>
+                    <script src="https://cdn.jsdelivr.net/npm/panzoom@9.4.0/dist/panzoom.min.js"></script>
+                    <style>
+                        #mermaid-container {{
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            border: 1px solid #ccc;
+                        }}
+                        #mermaid-zoom {{
+                            width: 100%;
+                            height: 100%;
+                        }}
+                    </style>
                 </head>
                 <body>
-                    <div class="mermaid">{graph_td}</div>
+                    <div id="mermaid-container">
+                        <div id="mermaid-zoom">
+                            <div class="mermaid">
+                                {graph_td}
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        const zoomElement = document.getElementById('mermaid-zoom');
+                        panzoom(zoomElement, {{
+                            zoomSpeed: 0.065,
+                            maxZoom: 5,
+                            minZoom: 0.5
+                        }});
+                    </script>
                 </body>
                 </html>
                 """
-                st.components.v1.html(html_code, height=600)
+                st.components.v1.html(html_code, height=300)
                 manifest_file.seek(0)
                 catalog_file.seek(0)
     else:
