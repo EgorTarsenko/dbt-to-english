@@ -35,12 +35,15 @@ with st.form("user_form"):
     if manifest_file:
         json_data = json.load(manifest_file)
         keys = list(json_data['nodes'].keys())
-        nodes_to_parse = st.multiselect("Select a node id", keys)
+        nodes_to_parse = st.multiselect("Select a node id",
+                                        [key for key in keys
+                                         if key.split('.')[0] == 'model'])
         manifest_file.seek(0)
-    submitted = st.form_submit_button("Submit")
+    submitted = st.form_submit_button("Parse Json Files" if not manifest_file
+                                      else "Submit")
 
-if submitted and nodes_to_parse:
-    if catalog_file and manifest_file:
+if submitted:
+    if catalog_file and manifest_file and nodes_to_parse:
         for node_to_parse in nodes_to_parse:
             with st.expander(node_to_parse):
                 response = st.write_stream(get_chat_response(catalog_file, manifest_file,

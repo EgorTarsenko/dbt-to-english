@@ -30,3 +30,32 @@ Start the project using Docker Compose:
 ```
 docker compose up --build
 ```
+
+# UI
+
+Visit [http://localhost:8501/](http://localhost:8501/) to access the Streamlit interface.
+
+1. Upload both `catalog.json` and `manifest.json`.  
+   If you don’t have a DBT project, you can use the sample files from `DbtExampleProject/target`.
+
+2. Click the **"Parse JSON File"** button.
+
+3. A new dropdown field labeled **"Select a node ID"** will appear. Choose the node(s) you want to parse.
+
+4. Click the **"Submit"** button to proceed.
+
+---
+
+# Backend
+
+The Streamlit UI communicates with a FastAPI backend. It uses the `/get_node_in_english` endpoint, which can also be used independently of Streamlit.
+
+### Endpoint: `/get_node_in_english`
+
+**Parameters:**
+- `catalog_file`
+- `manifest_file`
+- `node_to_parse`
+- `prompt`
+
+This endpoint processes the provided inputs and returns a natural language interpretation of the selected node.
