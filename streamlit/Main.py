@@ -28,9 +28,6 @@ with st.form("user_form"):
                                      type=["json"])
     with open('streamlit/default_prompt.txt', 'r') as f:
         default_prompt = f.read()
-    prompt = st.text_area("System Prompt",
-                          value=default_prompt,
-                          height=200)
     nodes_to_parse = []
     if manifest_file:
         json_data = json.load(manifest_file)
@@ -39,8 +36,11 @@ with st.form("user_form"):
                                         [key for key in keys
                                          if key.split('.')[0] == 'model'])
         manifest_file.seek(0)
+        prompt = st.text_area("System Prompt",
+                              value=default_prompt,
+                              height=200)
     submitted = st.form_submit_button("Parse Json Files" if not manifest_file
-                                      else "Submit")
+                                      else "Run LLM")
 
 if submitted:
     if catalog_file and manifest_file and nodes_to_parse:
