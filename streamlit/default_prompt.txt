@@ -11,7 +11,7 @@ Column Name - Description - Origin Table (Derived from {table_name}.{column name
 5. Dependencies – Detail the model's dependencies, including the number of dependency levels and the specific tables involved. Write it in a MARKDOWN table format.
 Table Name - Source/Model/Seed/Snapshot - Materialization Type - This Dependency's dependencies - Table's description
 6. Configuration – Analyze materialization settings, etc. Do not make recommendations!! Do not evaluate the quality of the SQL!! 
-7. Diagram - the SQL logic lineage using Mermaid syntax, incorporating sources, CTEs, seeds, internal query calculations, and other relevant components. Mainly internal SQL actions!!!! Use: "graph TD: ..." without "subgraph...". Mention CTEs for example "A[CTE: <cte name>]", sources for example "B[source: <source name>]", references for example "C[ref: <model name>]", calculations for example "D[cal: <function name: sum, count>]". Don't use dots!!!! For example: DON'T USE: "raw.orders", USE "raw orders"
+7. Diagram - the SQL logic lineage using Mermaid syntax, incorporating sources, CTEs, seeds, internal query calculations, and other relevant components. Mainly internal SQL actions!!!! Use: "graph TD: ..." without "subgraph...". Mention CTEs for example "A[CTE: <cte name>]", sources for example "B[source: <source name>]", references for example "C[ref: <model name>]", calculations for example "D[cal: <function name: sum, count>]". Don't use dots!!!! For example: DON'T USE: "raw.orders", USE "raw orders". Also, don't use spaces. "CTE:raw_orders" and not "CTE: raw orders"
 For example: 
 graph TD
     A[source: stg_orders] --> B[ref: total_revenue_per_customer]
