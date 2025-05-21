@@ -1,10 +1,12 @@
 from langchain_aws import ChatBedrock
 from langchain_anthropic import ChatAnthropic
+from langgraph.prebuilt import create_react_agent
 import os
 
 
 class DbtToEnglish:
-    def __init__(self, dbt_manifest, dbt_catalog, node_id, prompt):
+    def __init__(self, dbt_manifest, dbt_catalog,
+                 node_id, prompt, additional_context):
         self._llm = None
         self.dbt_manifest = dbt_manifest
         self.dbt_catalog = dbt_catalog
@@ -13,13 +15,12 @@ class DbtToEnglish:
         self.custom_prompt = prompt
         self.max_level = 2
         self._messages = None
+        self.additional_context = additional_context
 
     @property
-    def messages(self):
-        self._messages = [
-            ('system', self.custom_prompt),
-        ]
-        return self._messages
+    def sys_messages(self):
+        sys_message = self.custom_prompt + '\n' + self.additional_context
+        return sys_message
 
     @property
     def llm(self):
@@ -27,22 +28,33 @@ class DbtToEnglish:
         if model_type == 'Bedrock':
             self._llm = ChatBedrock(
                 model_id=model_id,
-                model_kwargs=dict(temperature=0, max_tokens=4096,),
+                model_kwargs=dict(temperature=0, max_tokens=8192,),
             )
         elif model_type == 'Anthropic':
             self._llm = ChatAnthropic(
                 model=model_id,
                 temperature=0,
-                max_tokens=4096,
+                max_tokens=8192,
             )
         return self._llm
 
+    @property
+    def react_agent(self):
+        return create_react_agent(self.llm,
+                                  tools=[],
+                                  prompt=self.sys_messages
+                                  )
+
     @staticmethod
-    def upload_dbt_node(node, dbt_manifest, dbt_catalog, prompt):
+    def upload_dbt_node(node, dbt_manifest, dbt_catalog, prompt,
+                        additional_context):
+        additional_context = f'REFERENCE LIBRARY: When encountering unfamiliar terminology, consult this supplementary knowledge base. The text below contains definitions, explanations, and contextual information for specialized terms, acronyms, and domain-specific language that may not be in standard training data. Use these values to explain acronyms and provide additional context to the user, incorporating explanations in your output: {additional_context}'
         return DbtToEnglish(dbt_manifest=dbt_manifest,
                             dbt_catalog=dbt_catalog,
                             node_id=node,
-                            prompt=prompt).get_model_explanation()
+                            prompt=prompt,
+                            additional_context=additional_context)\
+            .get_model_explanation()
 
     @staticmethod
     def get_dict_type_for_manifest(type_name):
@@ -74,11 +86,12 @@ class DbtToEnglish:
         return parsed_dict
 
     def get_model_explanation_from_llm(self, metadata_list):
-        for chunk in self.llm.stream(self.messages +
-                                     [('human',
-                                      f"""Tell me about {self.node_id} model.
-                                    {metadata_list}""")]):
-            yield chunk.content
+        for token, metadata in self.react_agent.stream(
+            {'messages': [
+                ('human', f"""Tell me about {self.node_id} model.
+                                    {metadata_list}""")]},
+                stream_mode='messages'):
+            yield token.content
 
     def get_dbt_manifest_list(self):
         metadata_list = []

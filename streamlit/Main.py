@@ -21,13 +21,15 @@ def split_diagram_block(text):
         return [{'type': 'prompt', 'text': text}]
 
 
-def get_chat_response(catalog_file, manifest_file, node_to_parse, prompt):
+def get_chat_response(catalog_file, manifest_file, node_to_parse, prompt,
+                      additional_context_file):
     url = 'http://fastapi:8080/get_node_in_english'
     with requests.post(
             url,
             stream=True,
             files={'catalog_file': catalog_file,
-                   'manifest_file': manifest_file},
+                   'manifest_file': manifest_file,
+                   'additional_context_file': additional_context_file},
             data={'node_to_parse': node_to_parse,
                   'prompt': prompt}
             ) as response:
@@ -103,6 +105,11 @@ with st.form("user_form"):
         prompt = st.text_area("System Prompt",
                               value=default_prompt,
                               height=200)
+        additional_context = st.file_uploader("Upload Additional Context",
+                                              type=['docx',
+                                                    'pdf',
+                                                    'txt',
+                                                    'md'])
     submitted = st.form_submit_button("Parse Json Files" if not manifest_file
                                       else "Run LLM")
 
@@ -114,9 +121,12 @@ if submitted:
                 with st.empty():
                     response = st.write_stream(
                         get_chat_response(catalog_file, manifest_file,
-                                          node_to_parse, prompt))
+                                          node_to_parse, prompt,
+                                          additional_context))
                     manifest_file.seek(0)
                     catalog_file.seek(0)
+                    if additional_context:
+                        additional_context.seek(0)
                     blocks = split_diagram_block(response)
                     add_markdown(blocks[0])
                 if len(blocks) > 1:
@@ -125,5 +135,7 @@ if submitted:
                 # st.write(blocks)
                 manifest_file.seek(0)
                 catalog_file.seek(0)
+                if additional_context:
+                    additional_context.seek(0)
     else:
         st.warning("Please upload files before submitting and add node id.")
