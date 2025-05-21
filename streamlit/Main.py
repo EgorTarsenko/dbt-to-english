@@ -22,7 +22,7 @@ def split_diagram_block(text):
 
 
 def get_chat_response(catalog_file, manifest_file, node_to_parse, prompt,
-                      additional_context_file):
+                      additional_context_file, use_database):
     url = 'http://fastapi:8080/get_node_in_english'
     with requests.post(
             url,
@@ -31,7 +31,8 @@ def get_chat_response(catalog_file, manifest_file, node_to_parse, prompt,
                    'manifest_file': manifest_file,
                    'additional_context_file': additional_context_file},
             data={'node_to_parse': node_to_parse,
-                  'prompt': prompt}
+                  'prompt': prompt,
+                  'use_database': use_database}
             ) as response:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
@@ -105,6 +106,7 @@ with st.form("user_form"):
         prompt = st.text_area("System Prompt",
                               value=default_prompt,
                               height=200)
+        use_database = st.checkbox('Connect to the Database?', value=False)
         additional_context = st.file_uploader("Upload Additional Context",
                                               type=['docx',
                                                     'pdf',
@@ -122,7 +124,7 @@ if submitted:
                     response = st.write_stream(
                         get_chat_response(catalog_file, manifest_file,
                                           node_to_parse, prompt,
-                                          additional_context))
+                                          additional_context, use_database))
                     manifest_file.seek(0)
                     catalog_file.seek(0)
                     if additional_context:

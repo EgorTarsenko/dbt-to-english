@@ -21,6 +21,7 @@ async def get_node_in_english(catalog_file: Annotated[UploadFile, File()],
                               manifest_file: Annotated[UploadFile, File()],
                               node_to_parse: Annotated[str, Form()],
                               prompt: Annotated[str, Form()],
+                              use_database: Annotated[bool, Form()],
                               additional_context_file: Annotated[
                                   UploadFile, File()] = None):
     manifest_str = await manifest_file.read()
@@ -57,5 +58,6 @@ async def get_node_in_english(catalog_file: Annotated[UploadFile, File()],
         manifest,
         catalog,
         prompt,
-        additional_context
+        additional_context,
+        use_database
     ), media_type='text/plain')
