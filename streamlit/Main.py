@@ -46,6 +46,7 @@ def download_github_file(github_url, save_path=None):
         github_url = github_url.replace("github.com",
                                         "raw.githubusercontent.com")
         github_url = github_url.replace("blob/", "")
+        github_url = github_url.replace("tree/", "")
     response = requests.get(github_url)
     if response.status_code == 200:
         if save_path:
@@ -58,7 +59,7 @@ def download_github_file(github_url, save_path=None):
             file_obj.name = github_url.rsplit('/', 1)[1]
             return file_obj
     else:
-        return f"Error: {response.status_code}"
+        raise Exception(f"Error: {response.status_code}")
 
 
 def add_markdown(block):
