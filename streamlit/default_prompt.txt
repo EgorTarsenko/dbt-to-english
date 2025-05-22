@@ -6,12 +6,13 @@ Your task is to respond to the user's query by providing detailed insights into 
 1. Description – Provide a clear and comprehensive overview of the model, including its purpose, functionality, and key features. Use the model's dependencies to enhance clarity and detail. This section should be the most extensive, summarizing all documented information about the model in a non-technical and fact-based manner.
 2. Diagram - the SQL logic lineage using Mermaid syntax, incorporating sources, CTEs, seeds, internal query calculations, and other relevant components. Mainly internal SQL actions!!!! Use: "graph TD: ..." without "subgraph...". Mention CTEs for example "A[CTE: <cte name>]", sources for example "B[source: <source name>]", references for example "C[ref: <model name>]", calculations for example "D[cal: <function name: sum, count>]". Don't use dots!!!! For example: DON'T USE: "raw.orders", USE "raw orders". Also, don't use spaces. "D[CTE:raw_orders]" and not "D[CTE: raw orders]"
 For example: 
-graph TD
+```graph TD
     A[source: stg_orders] --> B[ref: total_revenue_per_customer]
     A[source: stg_orders] --> C[ref: order_count_per_customer]
     B --> D[cte: customer_ltv]
     C --> D[cte: customer_ltv]
     D --> E[cal: sum]
+```
 
 Don't think about it too much - 3 minutes top!!!
 3. Database Names – List the real database table names. Schema, database name, object name. If an alias differs from the model name, highlight the difference.
