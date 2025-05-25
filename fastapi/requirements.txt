@@ -8,3 +8,4 @@ langchain-anthropic
 python-multipart
 python-docx
 PyPDF2
+langgraph

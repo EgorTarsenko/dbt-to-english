@@ -1,5 +1,6 @@
 from langchain_aws import ChatBedrock
 from langchain_anthropic import ChatAnthropic
+from langgraph.prebuilt import create_react_agent
 import os
 
 
@@ -17,12 +18,9 @@ class DbtToEnglish:
         self.additional_context = additional_context
 
     @property
-    def messages(self):
-        self._messages = [
-            ('system', self.custom_prompt),
-            ('system', self.additional_context),
-        ]
-        return self._messages
+    def sys_messages(self):
+        sys_message = self.custom_prompt + '\n' + self.additional_context
+        return sys_message
 
     @property
     def llm(self):
@@ -30,15 +28,22 @@ class DbtToEnglish:
         if model_type == 'Bedrock':
             self._llm = ChatBedrock(
                 model_id=model_id,
-                model_kwargs=dict(temperature=0, max_tokens=4096,),
+                model_kwargs=dict(temperature=0, max_tokens=8192,),
             )
         elif model_type == 'Anthropic':
             self._llm = ChatAnthropic(
                 model=model_id,
                 temperature=0,
-                max_tokens=4096,
+                max_tokens=8192,
             )
         return self._llm
+
+    @property
+    def react_agent(self):
+        return create_react_agent(self.llm,
+                                  tools=[],
+                                  prompt=self.sys_messages
+                                  )
 
     @staticmethod
     def upload_dbt_node(node, dbt_manifest, dbt_catalog, prompt,
@@ -81,11 +86,12 @@ class DbtToEnglish:
         return parsed_dict
 
     def get_model_explanation_from_llm(self, metadata_list):
-        for chunk in self.llm.stream(self.messages +
-                                     [('human',
-                                      f"""Tell me about {self.node_id} model.
-                                    {metadata_list}""")]):
-            yield chunk.content
+        for token, metadata in self.react_agent.stream(
+            {'messages': [
+                ('human', f"""Tell me about {self.node_id} model.
+                                    {metadata_list}""")]},
+                stream_mode='messages'):
+            yield token.content
 
     def get_dbt_manifest_list(self):
         metadata_list = []
